@@ -1,9 +1,7 @@
 let timeLeft;
 let timerId = null;
 let isWorkTime = true;
-let completedPomodoros = 0;
-let failedPomodoros = 0;
-let wasPaused = false;
+let isRunning = false;
 
 const timerDisplay = document.getElementById('timer');
 const startButton = document.getElementById('start');
@@ -11,11 +9,28 @@ const pauseButton = document.getElementById('pause');
 const resetButton = document.getElementById('reset');
 const modeDisplay = document.getElementById('mode');
 const messageDisplay = document.getElementById('message');
-const completedCount = document.getElementById('completed-count');
-const failedCount = document.getElementById('failed-count');
 
 const WORK_TIME = 25 * 60; // 25 minutes in seconds
 const BREAK_TIME = 5 * 60; // 5 minutes in seconds
+
+const goalModal = document.getElementById('goalModal');
+const goalInput = document.getElementById('goalInput');
+const goalDisplay = document.getElementById('goalDisplay');
+const startWithGoalBtn = document.getElementById('startWithGoal');
+const cancelGoalBtn = document.getElementById('cancelGoal');
+
+let currentGoal = '';
+
+function updateButtonStates() {
+    // Start button visibility
+    startButton.style.display = isRunning ? 'none' : 'block';
+    
+    // Pause button visibility
+    pauseButton.style.display = isRunning ? 'block' : 'none';
+    
+    // Reset button state
+    resetButton.disabled = !isRunning && timeLeft === WORK_TIME;
+}
 
 function updateDisplay(seconds) {
     const minutes = Math.floor(seconds / 60);
@@ -28,8 +43,10 @@ function startTimer() {
         if (timeLeft === undefined) {
             timeLeft = WORK_TIME;
         }
-        wasPaused = false;
+        isRunning = true;
+        updateButtonStates();
         messageDisplay.textContent = isWorkTime ? "Do the fucking work, bitch" : "";
+        
         timerId = setInterval(() => {
             timeLeft--;
             updateDisplay(timeLeft);
@@ -42,12 +59,8 @@ function startTimer() {
                 modeDisplay.textContent = isWorkTime ? 'Work Time' : 'Break Time';
                 messageDisplay.textContent = isWorkTime ? "Do the fucking work, bitch" : "";
                 updateDisplay(timeLeft);
+                updateButtonStates();
                 new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
-                
-                if (!isWorkTime && !wasPaused) {
-                    completedPomodoros++;
-                    completedCount.textContent = completedPomodoros;
-                }
             }
         }, 1000);
     }
@@ -55,36 +68,79 @@ function startTimer() {
 
 function pauseTimer() {
     if (timerId !== null) {
-        wasPaused = true;
         clearInterval(timerId);
         timerId = null;
+        isRunning = false;
         messageDisplay.textContent = "";
-        
-        if (isWorkTime && timeLeft < WORK_TIME) {
-            failedPomodoros++;
-            failedCount.textContent = failedPomodoros;
-        }
+        updateButtonStates();
     }
 }
 
 function resetTimer() {
     clearInterval(timerId);
     timerId = null;
+    isRunning = false;
     isWorkTime = true;
     timeLeft = WORK_TIME;
     modeDisplay.textContent = 'Work Time';
     messageDisplay.textContent = "";
+    currentGoal = '';
+    updateGoalDisplay();
     updateDisplay(timeLeft);
-    
-    if (timeLeft < WORK_TIME) {
-        failedPomodoros++;
-        failedCount.textContent = failedPomodoros;
+    updateButtonStates();
+}
+
+function showGoalModal() {
+    goalModal.classList.add('show');
+    goalInput.focus();
+    updateStartWithGoalButton();
+}
+
+function hideGoalModal() {
+    goalModal.classList.remove('show');
+    goalInput.value = '';
+}
+
+function updateGoalDisplay() {
+    if (currentGoal) {
+        goalDisplay.textContent = `Focus Goal: ${currentGoal}`;
+        goalDisplay.classList.add('show');
+    } else {
+        goalDisplay.classList.remove('show');
     }
 }
 
-startButton.addEventListener('click', startTimer);
+function updateStartWithGoalButton() {
+    startWithGoalBtn.disabled = !goalInput.value.trim();
+}
+
+// Event Listeners
+startButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!isRunning) {
+        showGoalModal();
+    }
+});
+
+startWithGoalBtn.addEventListener('click', () => {
+    const goal = goalInput.value.trim();
+    if (goal) {
+        currentGoal = goal;
+        hideGoalModal();
+        updateGoalDisplay();
+        startTimer();
+    }
+});
+
+cancelGoalBtn.addEventListener('click', () => {
+    hideGoalModal();
+});
+
+goalInput.addEventListener('input', updateStartWithGoalButton);
+
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', resetTimer);
 
-// Initialize the display
-updateDisplay(WORK_TIME); 
+// Initialize the display and button states
+updateDisplay(WORK_TIME);
+updateButtonStates(); 

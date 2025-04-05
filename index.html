@@ -7,10 +7,27 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="background-illustration">
+        <img src="illustration.png" alt="Decorative illustration of a sun and clock">
+    </div>
+    
+    <!-- Focus Goal Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <h2>What's your focus for this session?</h2>
+            <textarea id="goalInput" placeholder="Example: Write the first draft of my blog post" maxlength="200"></textarea>
+            <div class="modal-buttons">
+                <button id="startWithGoal" class="modal-button">Start Focus Session</button>
+                <button id="cancelGoal" class="modal-button secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div class="main-container">
         <div class="container">
             <div class="mode" id="mode">Work Time</div>
             <div class="timer" id="timer">25:00</div>
+            <div class="goal-display" id="goalDisplay"></div>
             <div class="message" id="message"></div>
             <div class="controls">
                 <button id="start">Start</button>
@@ -20,13 +37,12 @@
         </div>
 
         <div class="stats-panel">
-            <div class="stat-item">
-                <div class="stat-label">Completed Pomodoros</div>
-                <div class="stat-value completed" id="completed-count">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">Failed Pomodoros</div>
-                <div class="stat-value failed" id="failed-count">0</div>
+            <div class="music-section">
+                <div class="stat-label">Lofi Music</div>
+                <iframe id="lofi-player" 
+                    src="https://www.lofi.cafe/embed" 
+                    allow="autoplay">
+                </iframe>
             </div>
         </div>
     </div>
