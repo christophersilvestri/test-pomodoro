@@ -18,6 +18,7 @@ const goalInput = document.getElementById('goalInput');
 const goalDisplay = document.getElementById('goalDisplay');
 const startWithGoalBtn = document.getElementById('startWithGoal');
 const cancelGoalBtn = document.getElementById('cancelGoal');
+const modalCloseBtn = document.getElementById('modalClose');
 
 let currentGoal = '';
 
@@ -94,11 +95,13 @@ function showGoalModal() {
     goalModal.classList.add('show');
     goalInput.focus();
     updateStartWithGoalButton();
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
 }
 
 function hideGoalModal() {
     goalModal.classList.remove('show');
     goalInput.value = '';
+    document.body.style.overflow = ''; // Restore scrolling
 }
 
 function updateGoalDisplay() {
@@ -140,6 +143,23 @@ goalInput.addEventListener('input', updateStartWithGoalButton);
 
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', resetTimer);
+
+// Add event listener for escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && goalModal.classList.contains('show')) {
+        hideGoalModal();
+    }
+});
+
+// Add event listener for clicking outside modal
+goalModal.addEventListener('click', (e) => {
+    if (e.target === goalModal) {
+        hideGoalModal();
+    }
+});
+
+// Add event listener for close button
+modalCloseBtn.addEventListener('click', hideGoalModal);
 
 // Initialize the display and button states
 updateDisplay(WORK_TIME);
