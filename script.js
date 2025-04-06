@@ -19,8 +19,10 @@ const goalDisplay = document.getElementById('goalDisplay');
 const startWithGoalBtn = document.getElementById('startWithGoal');
 const cancelGoalBtn = document.getElementById('cancelGoal');
 const modalCloseBtn = document.getElementById('modalClose');
+const editGoalBtn = document.getElementById('editGoal');
 
 let currentGoal = '';
+let isEditing = false;
 
 function updateButtonStates() {
     // Start button visibility
@@ -29,8 +31,9 @@ function updateButtonStates() {
     // Pause button visibility
     pauseButton.style.display = isRunning ? 'block' : 'none';
     
-    // Reset button state
-    resetButton.disabled = !isRunning && timeLeft === WORK_TIME;
+    // Reset button visibility and state
+    resetButton.style.display = (timeLeft !== undefined && timeLeft !== WORK_TIME) || isRunning ? 'block' : 'none';
+    resetButton.disabled = false; // Reset button should never be disabled, just hidden when not needed
 }
 
 function updateDisplay(seconds) {
@@ -91,17 +94,41 @@ function resetTimer() {
     updateButtonStates();
 }
 
-function showGoalModal() {
+function validateAndStartTimer() {
+    const goal = goalInput.value.trim();
+    if (goal) {
+        currentGoal = goal;
+        hideGoalModal();
+        updateGoalDisplay();
+        if (!isEditing) {
+            startTimer();
+        }
+        isEditing = false;
+    } else {
+        goalInput.classList.add('error');
+        setTimeout(() => goalInput.classList.remove('error'), 820);
+    }
+}
+
+function showGoalModal(editing = false) {
+    isEditing = editing;
+    if (editing) {
+        goalInput.value = currentGoal;
+        startWithGoalBtn.textContent = 'Save Goal';
+    } else {
+        goalInput.value = '';
+        startWithGoalBtn.textContent = 'Start Focus Session';
+    }
     goalModal.classList.add('show');
     goalInput.focus();
-    updateStartWithGoalButton();
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    document.body.style.overflow = 'hidden';
+    startWithGoalBtn.disabled = !goalInput.value.trim();
 }
 
 function hideGoalModal() {
     goalModal.classList.remove('show');
     goalInput.value = '';
-    document.body.style.overflow = ''; // Restore scrolling
+    document.body.style.overflow = '';
 }
 
 function updateGoalDisplay() {
@@ -113,33 +140,40 @@ function updateGoalDisplay() {
     }
 }
 
-function updateStartWithGoalButton() {
-    startWithGoalBtn.disabled = !goalInput.value.trim();
-}
-
 // Event Listeners
 startButton.addEventListener('click', (e) => {
     e.preventDefault();
     if (!isRunning) {
-        showGoalModal();
+        // Only show goal modal if we're starting fresh (not paused and at the beginning of a session)
+        if (timeLeft === undefined || (timeLeft === WORK_TIME && isWorkTime)) {
+            showGoalModal(false);
+        } else {
+            // Resume from pause
+            startTimer();
+        }
     }
 });
 
-startWithGoalBtn.addEventListener('click', () => {
-    const goal = goalInput.value.trim();
-    if (goal) {
-        currentGoal = goal;
-        hideGoalModal();
-        updateGoalDisplay();
-        startTimer();
-    }
+startWithGoalBtn.addEventListener('click', validateAndStartTimer);
+
+editGoalBtn.addEventListener('click', () => {
+    showGoalModal(true);
 });
 
 cancelGoalBtn.addEventListener('click', () => {
     hideGoalModal();
 });
 
-goalInput.addEventListener('input', updateStartWithGoalButton);
+goalInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        validateAndStartTimer();
+    }
+});
+
+goalInput.addEventListener('input', () => {
+    startWithGoalBtn.disabled = !goalInput.value.trim();
+});
 
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', resetTimer);
@@ -162,5 +196,6 @@ goalModal.addEventListener('click', (e) => {
 modalCloseBtn.addEventListener('click', hideGoalModal);
 
 // Initialize the display and button states
+timeLeft = WORK_TIME;
 updateDisplay(WORK_TIME);
 updateButtonStates(); 

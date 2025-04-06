@@ -102,7 +102,7 @@ button {
 }
 
 button:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
     cursor: not-allowed;
     transform: none !important;
 }
@@ -116,13 +116,32 @@ button:active:not(:disabled) {
     color: white;
 }
 
+#start:hover {
+    background-color: #009cc8;
+}
+
 #pause {
     display: none;
+    background-color: var(--accent-yellow);
+    color: var(--text-primary);
+}
+
+#pause:hover {
+    background-color: #e5a200;
 }
 
 #reset {
     background-color: var(--accent-red);
     color: white;
+    display: none;
+}
+
+#reset:hover {
+    background-color: #e63400;
+}
+
+#reset:disabled {
+    opacity: 0.7;
 }
 
 .mode {
@@ -227,137 +246,195 @@ button:active:not(:disabled) {
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(8px);
-    padding: 1rem;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    padding: 2rem;
 }
 
 .modal.show {
     display: flex;
-    opacity: 1;
 }
 
 .modal-content {
-    background: var(--card-background);
+    background: white;
     padding: 3rem;
-    border-radius: 24px;
+    border-radius: 32px;
     width: 90%;
     max-width: 600px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     position: relative;
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
-}
-
-.modal.show .modal-content {
-    transform: translateY(0);
 }
 
 .modal-close {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    width: 40px;
-    height: 40px;
+    top: 2rem;
+    right: 2rem;
+    width: 32px;
+    height: 32px;
     border: none;
     background: transparent;
     cursor: pointer;
-    padding: 8px;
-    border-radius: 20px;
+    padding: 4px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
     transition: all 0.2s ease;
+    min-width: unset;
 }
 
 .modal-close:hover {
-    background-color: rgba(16, 41, 76, 0.1);
+    background-color: rgba(16, 41, 76, 0.05);
     color: var(--text-primary);
-    transform: rotate(90deg);
 }
 
 .modal-content h2 {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     color: var(--text-primary);
-    margin-top: 0;
-    margin-bottom: 2rem;
+    margin: 0 0 2rem 0;
     font-size: 2.5rem;
     line-height: 1.2;
+    padding-right: 2rem;
+}
+
+.input-wrapper {
+    background: #F8F9FB;
+    border: 2px solid #E8ECF4;
+    border-radius: 24px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: #4318FF;
+    background: white;
+}
+
+#goalInput.error + .input-wrapper {
+    border-color: var(--accent-red);
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%, 50%, 70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%, 60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }
 
 #goalInput {
     width: 100%;
-    padding: 1.5rem;
-    border: 2px solid rgba(16, 41, 76, 0.1);
-    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 20px;
     font-family: 'Roboto', sans-serif;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    resize: vertical;
-    min-height: 140px;
-    margin-bottom: 2.5rem;
-    background: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    resize: none;
+    min-height: 120px;
+    background: transparent;
     color: var(--text-primary);
     transition: all 0.2s ease;
 }
 
 #goalInput:focus {
     outline: none;
-    border-color: var(--accent-green);
-    box-shadow: 0 0 0 4px rgba(0, 174, 224, 0.1);
 }
 
 #goalInput::placeholder {
-    color: rgba(16, 41, 76, 0.4);
+    color: #A3AED0;
 }
 
 .modal-buttons {
     display: flex;
-    gap: 1.25rem;
+    gap: 1rem;
     justify-content: flex-end;
 }
 
 .modal-button {
     font-family: 'Poppins', sans-serif;
-    padding: 1.25rem 2.5rem;
-    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    font-size: 1rem;
     border: none;
     border-radius: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 600;
-    min-width: 180px;
+    min-width: 140px;
+}
+
+.modal-button.primary {
+    background-color: #4318FF;
+    color: white;
+}
+
+.modal-button.primary:hover:not(:disabled) {
+    background-color: #3311DD;
 }
 
 .modal-button.secondary {
-    background-color: rgba(16, 41, 76, 0.05);
+    background-color: #F4F7FE;
     color: var(--text-primary);
 }
 
 .modal-button.secondary:hover:not(:disabled) {
-    background-color: rgba(16, 41, 76, 0.1);
+    background-color: #E9EDF7;
 }
 
-#startWithGoal {
-    background-color: var(--accent-green);
-    color: white;
+.modal-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-#startWithGoal:hover:not(:disabled) {
-    background-color: #0098c4;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 174, 224, 0.2);
+@media (max-width: 600px) {
+    .modal {
+        padding: 1rem;
+    }
+
+    .modal-content {
+        padding: 2rem;
+    }
+
+    .modal-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .modal-button {
+        width: 100%;
+    }
 }
 
 /* Goal Display Styles */
+.goal-display-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
 .goal-display {
     font-family: 'Poppins', sans-serif;
     font-size: 1.1rem;
-    color: var(--accent-green);
-    margin: 1rem 0;
-    padding: 1rem;
+    color: var(--accent-blue);
+    padding: 0.5rem 1rem;
     border-radius: 12px;
     background: rgba(0, 174, 224, 0.1);
     min-height: 1.5rem;
@@ -366,4 +443,29 @@ button:active:not(:disabled) {
 
 .goal-display.show {
     display: block;
+}
+
+.edit-goal {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    min-width: unset;
+}
+
+.edit-goal:hover {
+    background-color: rgba(16, 41, 76, 0.05);
+    color: var(--text-primary);
+}
+
+.goal-display.show + .edit-goal {
+    display: flex;
 } 
