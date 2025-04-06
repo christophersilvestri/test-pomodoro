@@ -39,7 +39,17 @@ function updateButtonStates() {
 function updateDisplay(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const timeString = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    
+    // Update timer display
+    timerDisplay.textContent = timeString;
+    
+    // Update browser tab title with time, mode, and goal if exists
+    let title = `${timeString} - ${isWorkTime ? 'Work' : 'Break'}`;
+    if (currentGoal && isWorkTime) {
+        title += ` | ${currentGoal}`;
+    }
+    document.title = title;
 }
 
 function startTimer() {
@@ -138,6 +148,7 @@ function updateGoalDisplay() {
     } else {
         goalDisplay.classList.remove('show');
     }
+    updateDisplay(timeLeft); // Update title when goal changes
 }
 
 // Event Listeners
